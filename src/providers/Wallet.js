@@ -1,3 +1,5 @@
+import Web3 from "web3";
+
 class Wallet {
   web3 = null;
 
@@ -7,7 +9,7 @@ class Wallet {
     if (!metamaskEnabled) {
       console.info("You need to install MetaMask to use this provider");
     } else {
-      this.web3 = window.web3;
+      this.web3 = new Web3(window.web3.currentProvider);
     }
   }
 
@@ -20,16 +22,17 @@ class Wallet {
     });
   }
 
-  onAddressChange(callback) {
-    this.web3.currentProvider.publicConfigStore.on("update", event => {
-      if (
-        event.selectedAddress.toLowerCase() !==
-        this.web3.eth.defaultAccount.toLowerCase()
-      ) {
-        this.web3.eth.defaultAccount = event.selectedAddress;
-        callback(event.selectedAddress);
-      }
+  getChainId() {
+    return new Promise((resolve, reject) => {
+      this.web3.eth.net.getId((err, chainId) => {
+        if (err) reject(null);
+        resolve(chainId);
+      });
     });
+  }
+
+  onChange(callback) {
+    this.web3.currentProvider.publicConfigStore.on("update", callback);
   }
 }
 

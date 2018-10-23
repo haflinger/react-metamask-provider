@@ -7,9 +7,10 @@ const App = props => {
     <Fragment>
       <WalletProvider>
         <WalletConsumer>
-          {({ accounts, address, login, loggedIn }) => (
+          {({ accounts, address, chainId, login, loggedIn }) => (
             <div>
               <div>Current Address : {address}</div>
+              <div>Current chainId: {chainId} </div>
               <div>{loggedIn ? `Logged in` : `Not logged in`}</div>
               <div>
                 <button onClick={() => login()} disabled={!address}>

@@ -19,20 +19,23 @@ class WalletProvider extends PureComponent {
     this.wallet = new Wallet();
   }
 
-  componentDidMount() {
-    this.wallet.getAddress().then(address => {
-      this.setState({ address });
-    });
-
+  async componentDidMount() {
+    this.updateState();
     // If wallet address change
-    this.wallet.onAddressChange(address => {
-      this.setState({ address });
+    this.wallet.onChange(() => this.updateState());
+  }
+
+  async updateState() {
+    this.setState({
+      address: await this.wallet.getAddress(),
+      chainId: await this.wallet.getChainId()
     });
   }
 
   login() {
-    const { personal } = this.wallet.web3;
-    personal.sign("Login", this.state.address, err => {
+    const { eth } = this.wallet.web3;
+    eth.sign("Login", this.state.address, (err, result) => {
+      console.log(err, result);
       this.setState({ loggedIn: err ? false : true });
     });
   }
